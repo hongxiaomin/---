@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>茶圈子</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../dist/css/mui.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/app.css"/>
+		<style>
+			html,
+			body {
+				background-color: #efeff4;
+			}
+			.mui-bar~.mui-content .mui-fullscreen {
+				top: 44px;
+				height: auto;
+			}
+			.mui-pull-top-tips {
+				position: absolute;
+				top: -20px;
+				left: 50%;
+				margin-left: -25px;
+				width: 40px;
+				height: 40px;
+				border-radius: 100%;
+				z-index: 1;
+			}
+			.mui-bar~.mui-pull-top-tips {
+				top: 24px;
+			}
+			.mui-pull-top-wrapper {
+				width: 42px;
+				height: 42px;
+				display: block;
+				text-align: center;
+				background-color: #efeff4;
+				border: 1px solid #ddd;
+				border-radius: 25px;
+				background-clip: padding-box;
+				box-shadow: 0 4px 10px #bbb;
+				overflow: hidden;
+			}
+			.mui-pull-top-tips.mui-transitioning {
+				-webkit-transition-duration: 200ms;
+				transition-duration: 200ms;
+			}
+			.mui-pull-top-tips .mui-pull-loading {
+				/*-webkit-backface-visibility: hidden;
+				-webkit-transition-duration: 400ms;
+				transition-duration: 400ms;*/
+				
+				margin: 0;
+			}
+			.mui-pull-top-wrapper .mui-icon,
+			.mui-pull-top-wrapper .mui-spinner {
+				margin-top: 7px;
+			}
+			.mui-pull-top-wrapper .mui-icon.mui-reverse {
+				/*-webkit-transform: rotate(180deg) translateZ(0);*/
+			}
+			.mui-pull-bottom-tips {
+				text-align: center;
+				background-color: #efeff4;
+				font-size: 15px;
+				line-height: 40px;
+				color: #777;
+			}
+			.mui-pull-top-canvas {
+				overflow: hidden;
+				background-color: #fafafa;
+				border-radius: 40px;
+				box-shadow: 0 4px 10px #bbb;
+				width: 40px;
+				height: 40px;
+				margin: 0 auto;
+			}
+			.mui-pull-top-canvas canvas {
+				width: 40px;
+			}
+			.mui-slider-indicator.mui-segmented-control {
+				background-color: #efeff4;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<span class="mui-icon mui-icon-search mui-pull-left"></span>
+			<h1 class="mui-title" style="font-size: 0.6827rem;">茶圈子</h1>
+			<span class="mui-pull-right post-card" id="postLink"><a href="javaScript:;">发布新帖子</a></span>
+		</header>
+		<div class="mui-content">
+			<div id="slider" class="mui-slider mui-fullscreen">
+				<div id="sliderSegmentedControl" class="mui-scroll-wrapper mui-slider-indicator mui-segmented-control mui-segmented-control-inverted">
+					<div class="mui-scroll">
+						<a class="mui-control-item mui-active" href="#item1mobile">
+							看帖
+						</a>
+						<a class="mui-control-item" href="#item2mobile">
+							我的帖子
+						</a>
+						<a class="mui-control-item" href="#item3mobile">
+							互动消息
+						</a>
+					</div>
+				</div>
+				<div id="sliderProgressBar" class="mui-slider-progress-bar mui-col-xs-4" style="margin-bottom: 20px;"></div>
+				<div class="mui-slider-group p_top">
+					<div id="item1mobile" class="mui-slider-item mui-control-content mui-active">
+						<div id="scroll1" class="mui-scroll-wrapper">
+							<div class="mui-scroll">
+								<ul class="mui-table-view"></ul>
+							</div>
+						</div>
+					</div>
+					<div id="item2mobile" class="mui-slider-item mui-control-content">
+						<div class="mui-scroll-wrapper">
+							<div class="mui-scroll">
+								<ul class="mui-table-view"></ul>
+							</div>
+						</div>
+					</div>
+					<div id="item3mobile" class="mui-slider-item mui-control-content">
+						<div class="mui-scroll-wrapper">
+							<div class="mui-scroll">
+								<ul class="mui-table-view"></ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="../dist/js/mui.min.js"></script>
+		<script src="../dist/js/mui.pullToRefresh.js"></script>
+		<script src="../dist/js/mui.pullToRefresh.material.js"></script>
+		<script src="../js/refreshRem.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../lib/editor/js/lib/zepto.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/ajax.js" type="text/javascript" charset="utf-8"></script>
+		<script>
+			mui.init();
+			(function($) {
+				//阻尼系数
+				var deceleration = mui.os.ios?0.003:0.0009;
+				var numBox={
+					0:1,
+					1:1,
+					2:1
+				};
+				var IsOverBox={
+					0:false,
+					1:false,
+					2:false
+				};
+				var token='3fbac2c2465e60035d882ed4e29c3140';
+				$('.mui-scroll-wrapper').scroll({
+					bounce: false,
+					indicators: true, //是否显示滚动条
+					deceleration:deceleration
+				});
+				
+				$.ready(function() {
+					//循环初始化所有下拉刷新，上拉加载。
+					$.each(document.querySelectorAll('.mui-slider-group .mui-scroll'), function(index, pullRefreshEl) {
+						$(pullRefreshEl).pullToRefresh({
+//							down: {
+//								callback: function() {
+//									var self = this;
+//									setTimeout(function() {
+//										var ul = self.element.querySelector('.mui-table-view');
+////										ul.insertBefore(createFragment(ul, index, 10, true), ul.firstChild);
+//										ul.insertBefore(createFragment(), ul.firstChild);
+//										self.endPullDownToRefresh();
+//									}, 1000);
+//								}
+//							},
+							up: {
+								callback: function() {
+									console.log(index);
+									var self = this;
+									setTimeout(function() {
+										var ul = self.element.querySelector('.mui-table-view');
+//										ul.appendChild(createFragment(ul, index, 5));
+										if(IsOverBox[index]){
+											self.endPullUpToRefresh();
+											return false;
+										}
+										numBox[index]++;
+										ul.appendChild(createFragment(numBox[index],index));
+										self.endPullUpToRefresh();
+									}, 1000);
+								}
+							}
+						});
+					});
+					
+					var ulBox1 =document.getElementById('item1mobile').querySelector('.mui-table-view');
+					ulBox1.appendChild(createFragment(numBox[0],0));
+					
+					var ulBox2=document.getElementById('item2mobile').querySelector('.mui-table-view');
+					ulBox2.appendChild(createFragment(numBox[1],1));
+					
+					var ulBox3=document.getElementById('item3mobile').querySelector('.mui-table-view');
+					ulBox3.appendChild(createFragment(numBox[2],2));
+					
+					function createFragment(num,index) {
+						var fragment = document.createDocumentFragment();
+						if(index==0){
+							var listUrl='circle/getList?&token='+token+'&page='+num+'&size =10';
+							ajaxGetList(listUrl,function(data){
+								console.log(data);
+								data=data.result;
+								if(data){
+									var total=data.total;
+									if(total==0){
+	//									mui.toast('目前暂无数据')
+									}else{
+										if(Math.ceil(total/10)==num){
+											IsOverBox[index]=true;
+										}
+										var list=data.list;
+										var li1;
+										for (var i = 0; i < list.length; i++) {
+											var currentData=list[i];
+											li1 = document.createElement('li');
+											li1.className = 'mui-table-view-cell mui-media';
+											li1.setAttribute('dataId',currentData.id);
+											var liContent='<a href="javaScript:;"><img class="mui-media-object mui-pull-left see-photo" src="'+currentData.user.image_url+'"><div class="mui-media-body"><p class="list-title">'+currentData.user.name+'</p><p class="article-title">'+currentData.title+'</p><p class="article-body">'+currentData.content+'</p><p class="article-info"><span class="mui-pull-left">'+currentData.update_time+'</span><span class="mui-pull-right"><i class="mui-icon mui-icon-chat"></i><em> '+currentData.comment_num+' </em></span></p></div></a>';
+											li1.innerHTML=liContent;
+											fragment.appendChild(li1);
+										}
+									}
+								}
+							})
+						}else if(index==1){
+							var listUrl='circle/getList?&token='+token+'&page='+num+'&size =10&is_my=1';
+							ajaxGetList(listUrl,function(data){
+								data=data.result;
+								if(data){
+									var total=data.total;
+									if(total==0){
+	//									mui.toast('目前暂无数据')
+									}else{
+										if(Math.ceil(total/10)==num){
+											IsOverBox[index]=true;
+										}
+										var list=data.list;
+										var li2;
+										for (var i = 0; i < list.length; i++) {
+											var currentData=list[i];
+											li2 = document.createElement('li');
+											li2.className = 'mui-table-view-cell mui-media';
+											li2.setAttribute('dataId',currentData.id);
+											var liContent='<a href="javaScript:;"><img class="mui-media-object mui-pull-left see-photo" src="'+currentData.user.image_url+'"><div class="mui-media-body"><p class="list-title">'+currentData.user.name+'</p><p class="article-title">'+currentData.title+'</p><p class="article-body">'+currentData.content+'</p><p class="article-info"><span class="mui-pull-left">'+currentData.update_time+'</span><span class="mui-pull-right"><i class="mui-icon mui-icon-chat"></i><em> '+currentData.comment_num+' </em></span></p></div></a>';
+											li2.innerHTML=liContent;
+											fragment.appendChild(li2);
+										}
+									}
+								}
+							})
+						}else if(index==2){
+							console.log(num);
+							var msgUrl='circle/newMessage?&token='+token+'&page='+num+'&size =10';
+							ajaxGetList(msgUrl,function(data){
+								data=data.result;
+								if(data){
+									var total=data.total;
+									console.log(total);
+									console.log(data)
+									if(total==0){
+	//									mui.toast('目前暂无数据')
+									}else{
+										if(Math.ceil(total/10)==num||total==0){
+											IsOverBox[index]=true;
+										}
+										var list=data.list;
+										console.log(list);
+										var li3;
+										for (var i = 0; i < list.length; i++) {
+											var currentData=list[i];
+											li3 = document.createElement('li');
+											li3.className = 'mui-table-view-cell mui-media';
+											var replyType='';
+											if(currentData.type=='reply'){
+												replyType='回复我的评论: '
+											}else if(currentData.type=='comment'){
+												replyType='评论我的帖子: '
+											}
+											li3.setAttribute('dataId',currentData.circle.id);
+											var liContent='<a href="javascript:;"><img class="mui-media-object mui-pull-left see-photo" src="'+currentData.from_user.image_url+'"><div class="mui-media-body"><p class="list-title">'+currentData.from_user.name+'</p><p class="article-body">'+currentData.circle.content+'</p><p class="article-review">'+replyType+''+currentData.content+'</p><p class="article-info"><span class="mui-pull-left">发布于'+currentData.circle.update_time+'</span><span class="mui-pull-right"><i class="mui-icon mui-icon-chat"></i><em>回复</em></span></p></div></a>';
+											
+											li3.innerHTML=liContent;
+											fragment.appendChild(li3);
+										}
+									}
+								}
+							})
+						}
+						
+						return fragment;
+					};
+					
+					
+//					var createFragment = function(ul, index, count, reverse) {
+//						var length = ul.querySelectorAll('li').length;
+//						var fragment = document.createDocumentFragment();
+//						var li;
+//						for (var i = 0; i < count; i++) {
+//							li = document.createElement('li');
+//							li.className = 'mui-table-view-cell';
+//							li.innerHTML = '第' + (index + 1) + '个选项卡子项-' + (length + (reverse ? (count - i) : (i + 1)));
+//							fragment.appendChild(li);
+//						}
+//						return fragment;
+//					};
+
+				});
+			})(mui);
+			
+			$(function(){
+				
+				$(document).off('click','.mui-table-view-cell').on('click','.mui-table-view-cell',function(){
+					var id=$(this).attr('dataid');
+					localStorage.setItem('id',id);
+					window.location.href='detail.html';
+				})
+				
+				$('#postLink').click(function(){
+					window.location.href='posting.html';
+				})
+				
+			})
+		</script>
+	</body>
+
+</html>

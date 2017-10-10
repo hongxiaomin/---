@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>茶圈子</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../dist/css/mui.min.css">
+		<link rel="stylesheet" type="text/css" href="../css/app.css"/>
+		
+		<style>
+			html,
+			body {
+				background-color: #efeff4;
+			}
+			.mui-bar~.mui-content .mui-fullscreen {
+				top: 44px;
+				height: auto;
+				margin-bottom: 2.6rem;
+			}
+			.mui-pull-top-tips {
+				position: absolute;
+				top: -20px;
+				left: 50%;
+				margin-left: -25px;
+				width: 40px;
+				height: 40px;
+				border-radius: 100%;
+				z-index: 1;
+			}
+			.mui-bar~.mui-pull-top-tips {
+				top: 24px;
+			}
+			.mui-pull-top-wrapper {
+				width: 42px;
+				height: 42px;
+				display: block;
+				text-align: center;
+				background-color: #efeff4;
+				border: 1px solid #ddd;
+				border-radius: 25px;
+				background-clip: padding-box;
+				box-shadow: 0 4px 10px #bbb;
+				overflow: hidden;
+			}
+			.mui-pull-top-tips.mui-transitioning {
+				-webkit-transition-duration: 200ms;
+				transition-duration: 200ms;
+			}
+			.mui-pull-top-tips .mui-pull-loading {
+				/*-webkit-backface-visibility: hidden;
+				-webkit-transition-duration: 400ms;
+				transition-duration: 400ms;*/
+				
+				margin: 0;
+			}
+			.mui-pull-top-wrapper .mui-icon,
+			.mui-pull-top-wrapper .mui-spinner {
+				margin-top: 7px;
+			}
+			.mui-pull-top-wrapper .mui-icon.mui-reverse {
+				/*-webkit-transform: rotate(180deg) translateZ(0);*/
+			}
+			.mui-pull-bottom-tips {
+				text-align: center;
+				background-color: #efeff4;
+				font-size: 15px;
+				line-height: 40px;
+				color: #777;
+			}
+			.mui-pull-top-canvas {
+				overflow: hidden;
+				background-color: #fafafa;
+				border-radius: 40px;
+				box-shadow: 0 4px 10px #bbb;
+				width: 40px;
+				height: 40px;
+				margin: 0 auto;
+			}
+			.mui-pull-top-canvas canvas {
+				width: 40px;
+			}
+			.mui-slider-indicator.mui-segmented-control {
+				background-color: #efeff4;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<span class=" mui-pull-left">
+				<a href="tea.html" class="mui-action-back mui-icon mui-icon-left-nav"></a>
+				<span style="font-size: 0.6rem;margin-left:-0.25rem;">茶圈子</span>
+			</span>
+			<h1 class="mui-title" style="font-size: 0.6827rem;" id="article-title">品茶的艺术</h1>
+			<span class="mui-pull-right mui-icon mui-icon-upload"></span>
+		</header>
+		
+		<div class="mui-content">
+			<div class="mui-fullscreen" >
+				<div class="mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<div class="bg-white" id="card-detail"></div>
+						<div style="margin-top: 0.46933rem;">
+							<ul class="mui-table-view" id="replyBox"></ul>
+						</div>
+					</div>
+				</div>
+			</div>
+		
+			<div class="review-Input-box mui-clearfix">
+				<span class="mui-pull-left"><img src="../img/smail.png" alt="" /></span>
+				<input type="text" name="" id="reviewInput" value="" placeholder="我也要说两句..." />
+				<button class="mui-pull-right" id="reviewBtn">发送</button>
+			</div>
+			
+		</div>
+		<script src="../dist/js/mui.min.js"></script>
+		<script src="../js/refreshRem.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../dist/js/mui.pullToRefresh.js"></script>
+		<script src="../dist/js/mui.pullToRefresh.material.js"></script>
+		<script src="../lib/editor/js/lib/zepto.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/ajax.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+			mui.init();
+			var token='3fbac2c2465e60035d882ed4e29c3140';
+			var id=localStorage.getItem('id');
+			var num=1;
+			var IsOver=false;
+			var detailReviewUrl='circleComment/getList?&token='+token+'&id='+id+'&page='+num+'&size =10';
+			(function($) {
+				//阻尼系数
+				var deceleration = mui.os.ios?0.003:0.0009;
+				$('.mui-scroll-wrapper').scroll({
+					bounce: false,
+					indicators: true, //是否显示滚动条
+					deceleration:deceleration
+				});
+				
+				$.ready(function() {
+					//循环初始化所有下拉刷新，上拉加载。
+					$.each(document.querySelectorAll('.mui-scroll'), function(index, pullRefreshEl) {
+						$(pullRefreshEl).pullToRefresh({
+							up: {
+								callback: function() {
+									var self = this;
+									setTimeout(function() {
+										var ul = self.element.querySelector('.mui-table-view');
+										console.log(IsOver);
+										if(IsOver){
+											self.endPullUpToRefresh();
+											return false;
+										}
+										num++;
+										ul.appendChild(createFragment(num));
+										self.endPullUpToRefresh();
+									}, 1000);
+								}
+							}
+						});
+					});
+					
+					var ulBox=document.getElementById('replyBox');
+					ulBox.appendChild(createFragment(num));
+					
+			
+				});
+			})(mui);
+		
+			getHeader();
+			
+			function getHeader(){
+				var detailUrl='circle/detail?&token='+token+'&id='+id+'';
+				ajaxGetList(detailUrl,function(data){
+					data=data.result;
+					if(data){
+						var newData=data.circle[0];
+						var articleHeader='<div class="mui-card-header mui-card-media article-header"><img src="'+newData.user.image_url+'" class="card-photo"/><div class="mui-media-body"><div class="mui-pull-left card-info"><span class="card-author">'+newData.user.name+'</span><span class="card-time">发布于 '+newData.update_time+'</span></div><div class="mui-pull-right card-review"><span class="mui-icon mui-icon-chat"></span><em>'+newData.comment_num+'条评论</em></div></div></div><div style="padding: 0.3413rem 0.6867rem;"><article>'+newData.content+'</article></div>';
+						$('#card-detail').html(articleHeader);
+						$('#article-title').html(newData.title);
+					}
+				});
+			}
+			
+			
+			
+			$(document).off('click','.more').on('click','.more',function(){
+				$(this).prev('.reviews-list').toggleClass('mui-hidden');
+				if($(this).html()=='展开全部回复'){
+					$(this).html('收回全部回复');
+				}else{
+					$(this).html('展开全部回复');
+				}
+			})
+			
+			var commentId=null;
+			var index=null;
+			
+			$(document).off('click','.review').on('click','.review',function(){
+				var comment=$(this).attr('data_commentid');
+				commentId=comment;
+				index=$(this).parents('li').index();
+				$('#reviewInput').focus();
+			})
+			
+			$('#reviewBtn').click(function(){
+				var val=$('#reviewInput').val().trim();
+				if(!!commentId){
+					console.log(commentId)
+					console.log(index);
+					var replyUrl='circleComment/reply?&token='+token+'&comment_id='+commentId+'&content='+val+'';
+					ajaxGetList(replyUrl,function(data){
+						if(data.app_code==22000){
+							num=1;
+							$('#replyBox').html(createFragment(num));
+							$('#reviewInput').val('');
+							$('li').eq(index).find('.reviews-list').removeClass('mui-hidden');
+							$('li').eq(index).find('.more').html('收回全部回复')
+							commentId=null;
+							index=null;
+						}
+					})
+				}else{
+					var articleId=localStorage.getItem('id');
+					console.log(articleId);
+					var commentUrl='circleComment/commit?&token='+token+'&content='+val+'&id='+articleId+'';
+					ajaxGetList(commentUrl,function(data){
+						if(data.app_code==22000){
+							num=1;
+							getHeader();
+							$('#replyBox').html(createFragment(num));
+							$('#reviewInput').val('');
+						}
+					})
+				}
+			
+			})
+			
+			function createFragment(num) {
+				var fragment = document.createDocumentFragment();
+				ajaxGetList(detailReviewUrl,function(data){
+					console.log(data);
+					data=data.result;
+					if(data){
+						var list=data.list;
+						var total=data.total;
+						var page=Math.ceil(total/10);
+						if(page==num){
+							IsOver=true;
+						}
+						var li;
+						for(var i=0;i<list.length;i++){
+							var currentData=list[i];
+							li = document.createElement('li');
+							li.className = 'mui-table-view-cell mui-media';
+							
+							var replyList=currentData.reply_list;
+							var replyLen=replyList.length;
+							var replyStr='';
+							var devide='';
+							if(replyLen>0){
+								devide='<div class="devide"></div>';
+							}
+							if(replyLen<=2){
+								for(var j=0;j<replyLen;j++){
+									replyStr+='<p><em>'+replyList[j].user.name+':</em><span>'+replyList[j].content+'</span></p>';
+								}
+								replyStr+='<div class="reviews-list mui-hidden"></div><p class="more mui-hidden">展开全部回复</p>';
+							}else{
+								for(var j=0;j<2;j++){
+									replyStr+='<p><em>'+replyList[j].user.name+':</em><span>'+replyList[j].content+'</span></p>';
+								}
+								var moreList='<div class="reviews-list mui-hidden">';
+								for(var m=2;m<replyLen;m++){
+									moreList+='	<p><em>'+replyList[m].user.name+':</em><span>'+replyList[m].content+'</span></p>';
+								}
+								moreList+='</div><p class="more">展开全部回复</p>';
+								replyStr+=moreList;
+							}
+							var liContent='<a href="javascript:;"><img class="mui-media-object mui-pull-left card-photo" src="'+currentData.user.image_url+'"><div class="mui-media-body"><p class="list-title">'+currentData.user.name+'</p><p class="article-body">'+currentData.content+'</p><p class="article-info mui-clearfix"><span class="mui-pull-left">'+currentData.update_time+'</span><span class="mui-pull-right review" data_commentId="'+currentData.id+'"><i class="mui-icon mui-icon-chat"></i><em>回复</em></span></p></div>'+devide+'<div class="mui-media-body reviews-person">'+replyStr+'</div></a>';
+							li.innerHTML = liContent;
+							fragment.appendChild(li);
+						}
+					}
+				});
+				return fragment;
+			};
+	
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,223 @@
+/*
+ *这是单独为hello mui准备的个性化css，可以覆盖标准mui的css定义；
+ * 在实际项目开发时，建议为App单独写一个css文件，从而实现项目的自定义皮肤功能；
+ * 
+ * */
+.mui-plus header.mui-bar{
+	display: none;
+}
+.mui-plus .mui-bar-nav~.mui-content{
+	padding: 0;
+}
+
+/*hm开头的表示仅为 Hello MUI示例定义*/
+.hm-description{
+	margin: .5em 0;
+}
+
+.hm-description>li {
+	font-size: 14px;
+	color: #8f8f94;
+}
+
+#slider .mui-segmented-control{
+	height: 1.85rem;
+	background: #fff;
+}
+
+#slider .mui-control-item{
+	line-height:1.85rem;
+	width: 1%;
+	display: table-cell;
+	text-align: center;
+}
+
+#slider .p_top{
+	top:2.3rem;
+}
+
+#slider .mui-slider-group{
+	
+}
+.post-card{
+padding: 0.48rem 0.5973rem 0.5973rem 0;
+font-size: 0.6rem;
+position: relative;
+z-index: 10;
+}
+.post-card a{
+	color: #333;
+}
+.list-title{
+	font-size: 0.5547rem;
+	color: #307142;
+}
+.article-title{
+	font-size: 0.512rem;
+	line-height:1.536rem ;
+	color: #333333;
+	font-family: arial;
+}
+.article-body{
+	/*word-break: break-all;*/
+	white-space: normal;
+	font-size: 0.4693rem;
+	color: #959595;
+	line-height: 0.5973rem;
+}
+.mui-media-body h1{
+	font-size: 0.6rem;
+}
+.mui-media-body img{
+	width: 12.4587rem;
+	height: 6.2293rem;
+	margin-top: 0.64rem;
+	margin-bottom: 0.64rem;
+}
+
+.article-review{
+	width: 100%;
+	height:1.066rem ;
+	line-height:1.066rem ;
+	background: #f2f2f2;
+	box-sizing: border-box;
+	padding: 0 0.256rem ;
+	font-size: 0.4266rem;
+	border-radius: 2px;
+	color: #666666;
+	margin-top: 0.512rem;
+}
+
+#item1mobile .mui-media-object{
+	line-height:1.8773rem ;
+	max-width: 1.8773rem;;
+	height: 1.8773rem;
+	margin-right:0.384rem ;
+}
+.article-info{
+	margin-top: 0.8533rem;
+}
+.article-info span{
+	color: #999999;
+	font-size: 0.4693rem;
+}
+.article-info .mui-icon{
+	font-size: 0.65rem;
+}
+.article-info em{
+	font-style: normal;
+}
+#item3mobile .article-info{
+	margin-top: 0.512rem;
+}
+.bg-white{
+	background: #fff;
+}
+.card-box{
+	box-shadow: none;
+}
+.mt-20{
+	margin-top: 0.4267rem;
+}
+.see-photo{
+	width: 1.92rem;
+	height: 1.92rem;
+	border-radius: 50%;
+}
+article{
+	font-size:0.426rem ;
+	font-family: "微软雅黑";
+	line-height: 0.64rem;
+}
+article h1{
+	font-size: 0.6rem;
+}
+article img{
+	width: 14.72rem;
+	height: 8.8746rem;
+}
+.article-header:after{
+	height:0;
+}
+
+.mui-table-view-cell .card-photo,.card-photo{
+	width: 1.45rem;
+	height: 1.45rem;
+	border-radius: 50%;
+}
+.card-info{
+	line-height: 1.45rem;
+	font-size: 0.512rem;
+}
+.card-author{
+	margin-right: 0.413rem;
+}
+.card-review{
+	line-height: 1.45rem;
+	font-size: 0.512rem;
+}
+.card-review .mui-icon{
+	font-size: 0.752rem;
+}
+.card-review em{
+	margin-left: 0.2rem;
+	font-style: normal;
+}
+.reviews-person{
+	padding: 0 0 0 2.3rem;
+}
+.reviews-person p{
+	font-size: 0.512rem;
+	line-height: 0.64rem;
+	margin-bottom:0.256rem ;
+	white-space: normal;
+}
+.reviews-person p em{
+	font-style: normal;
+	color: #307142;
+	margin-right: 0.384rem;
+}
+.reviews-person p.more{
+	text-align: center;
+	color: #307142;
+}
+.devide{
+	width: 105%; 
+	height: 1px; 
+	background: #c8c7cc;
+	transform: scaleY(0.5);
+	margin: 0.213rem 0 0.413rem;
+}
+.review-Input-box{
+	line-height:1.8773rem ;
+	height:1.8773rem ;
+	width: 100%;
+	background: #fff;
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	z-index: 100;
+}
+.review-Input-box img{
+	width:0.747rem ;
+	height: 0.747rem;
+	margin-left: 0.747rem;
+	margin-right: 0.533rem;
+	vertical-align: top;
+}
+.review-Input-box input{
+	width: 66%;
+	height: 1.152rem;
+	background: #f2f2f2;
+	font-size:0.4266rem ;
+}
+.review-Input-box  button{
+	background: #f2f2f2 ;
+	height: 1.152rem;
+	margin-right: 0.747rem;
+	margin-top:0.4413rem ;
+	font-size:0.4266rem ;
+}
+.review-Input-box  span{
+	margin-top:0.6213rem ;
+}

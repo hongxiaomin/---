@@ -1,0 +1,57 @@
+.article-title{
+	height: 1.8347rem;
+	margin: 0.4267rem 0;
+}
+
+.postbtn{
+	margin-left: 0.45rem;
+	padding: 13px 0;
+	position: relative;
+	z-index: 300;
+}
+.article-title input{
+	font-size: 0.5546rem;
+}
+.article-content{
+	width: 100%;
+	height: 20rem;
+	background: #fff;
+}
+#article-content{
+	width: 100%;
+	height: 100%;
+	font-size:0.5546rem;
+	line-height: 0.744rem;
+	padding:0.5rem ;
+	overflow: auto;
+	padding-bottom: 1rem;
+}
+#article-content img{
+	width: 14.72rem;
+	height: 8.8746rem;
+	display: block;
+	margin: 0.64rem auto;
+}
+
+.post-card{
+/*padding: 0.48rem 0.5973rem 0.5973rem 0;*/
+	font-size: 0.6rem;
+	color: #333;
+	position: relative;
+	z-index: 10;
+}
+
+#img-file{
+ 	width:1rem;
+ 	opacity: 0;
+ 	position: absolute;
+ 	left: 0;
+ 	top: 10px;
+ 	z-index: 100;
+}
+.post-img span{
+	color: #666;
+}
+.bgImg{
+	background:#CCCCCC;
+}

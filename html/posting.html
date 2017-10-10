@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>发布帖子</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="stylesheet" href="../dist/css/mui.min.css">
+		<link rel="stylesheet" href="../lib/editor/css/wangEditor-mobile.css" />
+		<link rel="stylesheet" type="text/css" href="../css/posting.css"/>
+	</head>
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<span class="mui-icon mui-icon-closeempty mui-pull-left" id="closePost"></span>
+			<h1 class="mui-title" style="font-size: 0.6827rem;">发布新帖子</h1>
+			<div class="mui-pull-right post-card">
+				<div class="mui-pull-left post-img">
+					<form enctype="multipart/form-data" id="postImg">
+						<span class="mui-icon mui-icon-image"></span>
+						<input type="file" name="image" id="img-file" value="" />
+					</form>
+				</div>
+				<div class="mui-pull-right postbtn">
+					<span class="" id="postSure">发布</span>
+				</div>
+			</div>
+			
+		</header>
+		<div class="mui-content">
+			<div class="article-title">
+				<input type="text" placeholder="帖子标题" value="" id="article-title"/>
+			</div>
+			<div class="article-content ">
+				<div id="article-content" contenteditable="true" placeholder="帖子正文"></div>
+			</div>
+		</div>
+		<script src="../dist/js/mui.min.js"></script>
+		<script src="../lib/editor/js/lib/jquery-2.1.1.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../lib/editor/js/lib/jquery-form.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/refreshRem.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../js/ajax.js" type="text/javascript" charset="utf-8"></script>
+		<script type="text/javascript">
+		var token='3fbac2c2465e60035d882ed4e29c3140';
+		var host='http://tea.api.test.sygcsoft.com/api/';
+		var isLoad=false;
+			$('#img-file').on('change',function(e){
+				var file=e.target.files[0];
+				if(!file){
+					return;
+				}
+				var type=file.type.split('/')[0];
+				if(type!='image'){
+					mui.toast('请上传图片');
+					return;
+				}
+				var size=Math.round(file.size/1024/1024);
+				if(size>3){
+					mui.toast('图片大小不得超过3M');
+					return;
+				}
+				var reader = new FileReader(); //新建FileReader对象
+			    reader.readAsDataURL(file); //读取为base64
+			    reader.onloadstart = function(){
+			        console.log('start');  //开始读取
+			    };
+			    reader.onprogress = function(e){
+			        //这个是定时触发的事件，文件较大的时候较明显
+//			        var p = '已完成：' + Math.round(e.loaded / e.total * 100) + '%' ;
+//			        var p = Math.round(e.loaded / e.total * 100);
+//			        mui(".file_upload").progressbar({progress:p}).show();
+//			        console.log(p)
+//			        $(".file_upload").find(".progress").html(p);
+			        console.log('uploading');  //文件较大，就会出现多个uploading
+			    };
+			    reader.onabort = function(){
+			        console.log('abort'); //用作取消上传功能
+			    };
+			    reader.onerror = function(){
+			        console.log('error'); //文件读取出错的时候触发，暂模拟不出
+			    };
+			    reader.onload = function(){
+			        console.log('load complete'); //完成
+			        var dataURL = reader.result,
+			       		name = file.name,size = Math.round(file.size / 1024);
+			       		console.log(dataURL);
+		       		$('<img src="'+dataURL+'" class="bgImg"/>').appendTo($("#article-content"));
+//		       		$('<img src="" class="bgImg" />').appendTo($("#article-content"));
+			    };
+			    reader.onloadend = function (e) {
+			    	console.log('img');
+	        	 	$('#postImg').ajaxSubmit({
+			        	type: "post",
+						dataType: "text",
+						async:true,
+						url:host+"/upload/image?&token="+token,
+						success:function(data){
+							data=JSON.parse(data);
+							$('.bgImg').remove();
+							console.log(data);
+							if(data.app_code==22000){
+								var imagelist=data.result.image;
+								var src=imagelist.url;
+							 	var imglist = '<img src="'+src+'" />';//预览图片
+		        				 imglist =$(imglist);
+		       					$("#article-content").append(imglist);   
+								isLoad=true;
+							}
+						}
+			        })
+			    };
+			})
+			
+			$('#postSure').click(function(){
+					var title=$('#article-title').val().trim();
+					var content=$('#article-content').html();
+					console.log(content);
+					var postUrl='circle/submit?&token='+token+'&title='+title+'&content='+content+'';
+					if(isLoad){
+						$.ajax({
+							type:"get",
+							url:host+postUrl,
+							async:true,
+							success:function(data){
+								console.log(data);
+								if(data.app_code==22000){
+									mui.alert('新帖子已发布成功！','提示','确定',function(){
+										window.location.href='tea.html';
+									})
+								}else{
+									mui.alert('新帖子已发布失败，'+data.app_msg+'！','提示','确定')
+								}
+							},
+							error:function(data){
+								console.log(data);
+								mui.alert('新帖子已发布失败，'+data.responseText.message+'！','提示','确定')
+							}
+						});
+					}else{
+						mui.alert('图片正在上传中，请耐心等待！','提示','确定');
+						return;
+					}
+				})
+				
+				$('#closePost').click(function(){
+					$('#article-title').val('');
+					$('#article-content').val('');
+					window.location.href='tea.html';
+				})
+		</script>
+	</body>
+</html>
